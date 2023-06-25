@@ -106,7 +106,7 @@ uniform vec3  u_color;</pre>
     <Vader auto mode="shadertoy" shader={stExample}> </Vader>
   </div>
 
-  <p> <i>Heart - gradient 2D</i> by <em>iq</em> from <a target="_blank" href="https://www.shadertoy.com/view/DldXRf">ShaderToy</a>.</p>
+  <p> <i>Heart - gradient 2D</i> by <em>iq</em> from <a target="_blank" href="https://www.shadertoy.com/view/DldXRf">ShaderToy</a> (MIT licence)</p>
 </section>
 
 

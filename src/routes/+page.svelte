@@ -2,6 +2,10 @@
   import Vader from '../lib/Vader.svelte';
 
   import Heading from './Heading.svelte';
+
+  import stExample from '../iq-heart.glsl?raw';
+
+  let maxIter = 4;
 </script>
 
 <Heading />
@@ -11,15 +15,17 @@
 <section>
   <h3> Turns Svelte props into uniform variables. </h3>
 
-  <p> Any prop passed to Vader with the prefix <code>u_</code> will be automatically made
-    available to the fragment shader.</p>
+  <p> Any prop passed to Vader with the prefix <code>u_</code> will automatically
+    be made available to the fragment shader using it's declared type.</p>
 
   <div class="code">
-    <pre>&lt;Vader u_brightness=&lbrace;brightness&rbrace; /&gt;</pre>
+    <pre>&lt;Vader u_brightness=&lbrace;brightness&rbrace;
+       color=&lbrace;color&rbrace; /&gt;</pre>
 
     <span>&rarr;</span>
 
-    <pre>uniform float u_brightness;</pre>
+    <pre>uniform float u_brightness;
+uniform vec3  u_color;</pre>
   </div>
 </section>
 
@@ -43,23 +49,66 @@
 
   <div class="code">
     <div>
-      <pre>&lt;Vader u_limit=&lbrace;3&rbrace; /&gt;</pre>
-      <pre>#define VADER_STATIC(u_limit, 10)</pre>
+      <pre>$: maxIter = 4;
+
+&lt;Vader u_max_iter=&lbrace;maxIter&rbrace; /&gt;</pre>
+      <span>+</span>
+      <pre>#define VADER_STATIC(u_max_iter, 20)</pre>
     </div>
     <span>&rarr;</span>
-    <pre>#define u_limit 3;</pre>
+    <pre>#define u_max_iter 4;</pre>
   </div>
 
   <p> Yes this is bad for performance. Don't use it every frame. </p>
+
+
+  <div class="example" style="margin-top: 4rem;">
+    <div class="input">
+      <label><code>u_max_iter:</code> {maxIter} </label>
+      <input bind:value={maxIter} type="range" min="2" max="20" step="1" />
+    </div>
+
+    <Vader u_max_iter={maxIter}>
+      <script type="x-shader/x-fragment">
+        precision mediump float;
+
+        uniform vec2 u_resolution;
+
+        #define MAX_ITER VADER_STATIC(u_max_iter)
+ 
+        void main () {
+          vec2 uv = gl_FragCoord.xy/u_resolution;
+          float v = 0.0;
+          float p = 1.0/float(MAX_ITER);
+
+          for (int i = 0; i < MAX_ITER; i++) {
+            if (uv.x > float(i) * p) {
+              v += p;
+            }
+          }
+
+          gl_FragColor = vec4(v, 1.0 - v, 0.5, 1.0);
+        }
+      </script>
+    </Vader>
+  </div>
 </section>
+
 
 <section>
   <h3> Supports ShaderToy shaders </h3>
 
-  <p> Vader supports copy-pasting shader source from Shadertoy.com.
+  <p> Vader supports directly running source code from Shadertoy.com.
     Use the `mode="shadertoy"` prop to enable Shadertoy support mode.</p>
-  <p> ⚠ Audio features are not supported. </p>
+  <p> <em>⚠</em> Audio features are not supported. </p>
+
+  <div class="example" style="margin-top: 4rem;">
+    <Vader auto mode="shadertoy" shader={stExample}> </Vader>
+  </div>
+
+  <p> <i>Heart - gradient 2D</i> by <em>iq</em> from <a target="_blank" href="https://www.shadertoy.com/view/DldXRf">ShaderToy</a>.</p>
 </section>
+
 
 <section>
   <h3> Example</h3>
@@ -128,8 +177,10 @@
   .code span {
     font-size: 2rem;
     line-height: 1;
-    margin: 0 1rem;
+    margin: 0.3rem 1rem 0.5rem;
     align-self: center;
+    text-align: center;
+    display: block;
   }
 
   h3 code, p code {
@@ -142,6 +193,30 @@
 
   h3 code {
     font-size: 1.2em;
+  }
+
+  .input {
+    background: rgba(0,0,0,0.3);
+    display: grid;
+    gap: 1rem;
+    padding: 1rem 1rem 1.5rem;
+    justify-content: center;
+  }
+
+  label {
+    display: block;
+    margin-bottom: 1rem;
+    color: #f3ec78;
+  }
+
+  label + input {
+    max-width: 10rem;
+  }
+
+  em, a {
+    color: #f3ec78;
+    font-style: normal;
+    font-weight: bold;
   }
 
 </style>

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" href="%sveltekit.assets%/favicon.png" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		%sveltekit.head%
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&family=Monoton&display=swap');
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html {
+        background: black;
+        font-size: 18px;
+      }
+
+      body {
+        font-family: 'Orbitron', sans-serif;
+        min-height: 100vh;
+        color: #fff;
+        background-color: #ff007a;
+        background: radial-gradient(circle at 50% 150%, #e96443, #ff007a, #833ab4, #405195, #203175);
+        background-attachment: fixed;
+      }
+
+      main {
+        display: grid;
+        grid-gap: 1rem;
+        text-align: center;
+        background: rgba(0,0,0,0.4);
+        min-height: 100vh;
+        padding-bottom: 20vh;
+      }
+
+      h1 {
+        font-family: 'Monoton', cursive;
+        letter-spacing: 2px;
+      }
+
+      h2, h3, h4, h5, h6 {
+        margin-top: 4em;
+        letter-spacing: 0.1em;
+      }
+
+      p {
+        letter-spacing: 0.15em;
+        line-height: 1.6;
+      }
+
+    </style>
+	</head>
+	<body data-sveltekit-preload-data="hover">
+		<main>%sveltekit.body%</main>
+	</body>
+</html>

@@ -55,6 +55,11 @@ const spreadCommit = (method:string):UniformCommitter => (state, uniform) => {
   state.gl[method](uniform.location, ...uniform.value);
 }
 
+const flattenCommit = (method:string):UniformCommitter => (state, uniform) => {
+  //@ts-ignore
+  state.gl[method](uniform.location, uniform.value.flat());
+}
+
 
 
 //
@@ -94,6 +99,12 @@ export default {
     update: defaultUpdate('int'),
   },
 
+  vec3v: {
+    commit: flattenCommit('uniform3fv'),
+    create: defaultCreate('vec3v'),
+    update: defaultUpdate('vec3v'),
+  },
+
   sampler2D: {
     incTexIndex: true,
     commit: (state, uniform, textureIndex) => {
@@ -127,10 +138,10 @@ export default {
   static: {
     commit: id,
     update: (state, uniform, value) => {
-      if (!state) return;
-      // by returning without updating, this uniform will still be recognised
+      // By returning without updating, this uniform will still be recognised
       // as dirty next update cycle, by which time the state might be ready
-      uniform.value = value as string;
+      if (!state) return;
+      uniform.value = value.toString();
       state.needsRecompile = true;
     },
     create: (state, location, value) => {

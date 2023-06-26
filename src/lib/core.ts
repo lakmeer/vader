@@ -47,8 +47,7 @@ const SCREEN_QUAD = [-1,-1, 1, -1,-1, 1, -1, 1, 1, -1, 1, 1 ];
 
 export const init = (label:string, canvas:HTMLCanvasElement, fragSrc:string, uniforms:Uniforms, mode = 'default') => {
 
-
-  // console.log(`Vader::init[${label}]`, canvas, Object.keys(uniforms));
+  //console.log(`Vader::init[${label}]`, canvas, Object.keys(uniforms));
 
   const state = {
     label,

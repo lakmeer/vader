@@ -56,6 +56,10 @@
       if (uniforms[name].value !== value) {
         Vader.updateUniform(vaderGl, uniforms[name], value);
       }
+
+      if (uniforms[name].type === 'sampler2D') {
+        Vader.updateTexture(vaderGl, uniforms[name], value);
+      }
     });
 
     // If auto-render isn't on, updates to props should trigger a render

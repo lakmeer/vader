@@ -4,7 +4,7 @@
 //
 
 import type { VaderState } from './core.ts';
-import type { Uniforms } from './uniforms.ts';
+import type { Uniforms, UniformInferredType } from './uniforms.ts';
 
 import { getUniformLocation, checkForMissingUniforms } from './uniforms.js';
 import { warn, error } from './misc.js';
@@ -101,6 +101,10 @@ const glslCompile = (gl:WebGLRenderingContext, src:string, type:number):WebGLSha
       .join('\n');
 
     error(`shaders::glslCompile`, `COMPILE ERROR: ${report}\n------\n${peekLines}\n------\n`)
+    console.group("Full Source");
+    console.log(src);
+    console.groupEnd();
+
     gl.deleteShader(shader);
   }
 
@@ -129,22 +133,26 @@ const createProgram = (gl:WebGLRenderingContext, fragSrc:string):WebGLProgram =>
 // Other source-code related functions
 //
 
-export const inferUniformTypeFromSource = (name:string, src:string):string => {
+export const inferUniformTypeFromSource = (name:string, src:string):UniformInferredType => {
   const lines = src.split('\n');
 
   for (let i in lines) {
     const line = lines[i].trim();
 
     if (line.startsWith('uniform') && line.includes(name)) {
-      return line.split(/\s+/)[1];
+      let [ UNIFORM, type, rest ] = line.split(/\s+/);
+      let isArray = rest.match(/\[(.+)\];$/);
+      let length = (isArray ? parseInt(isArray[1]) : 'single') || 'dynamic';
+      if (isArray) type = type + 'v';
+      return { name, type, length };
     }
 
     if (line.startsWith('#define') && line.includes(STATIC_REPLACEMENT) && line.includes(name)) {
-      return "static";
+      return { name, type: "static", length: "single" };
     }
   }
 
-  return "unused";
+  return { name, type: "unused", length: "single" };
 }
 
 export const hasShadertoyDirective = (src:string):boolean => {
@@ -200,7 +208,7 @@ const matchRxOr = (str:string, rx:RegExp, fallback:string):string => {
 export const replace = (src:string, name:string, value:string):string => {
   const pattern = rxStatic(name);
   if (src.match(pattern)) {
-    src = src.replace(pattern, value);
+    src = src.replaceAll(pattern, value);
   } else {
     warn(`shaders::replaceStatics - '${name}' not found in source`);
   }

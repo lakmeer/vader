@@ -16,6 +16,7 @@ import UNIFORM_TYPES from './uniform-config.js';
 
 export type AbstractUniform = {
   location: WebGLUniformLocation | null;
+  length: number | 'single' | 'dynamic';
 }
 
 export type Uniform1I = AbstractUniform & {
@@ -71,6 +72,16 @@ export type Uniforms = {
 }
 
 
+// Type Inference Result Object
+
+type UniformInferredType = {
+  name:   string;
+  type:   Uniform['type'],
+  length: Uniform['length'],
+}
+
+
+
 //
 // Uniform-related Functions
 //
@@ -79,8 +90,12 @@ export type Uniforms = {
 // - Creates a Uniform while infering the type from the matching shader source
 
 export const createUniformInferType = (state:VaderState, name:string, value:Uniform['value']|Drawable, shader:string):Uniform => {
-  const type     = inferUniformTypeFromSource(name, shader) as Uniform['type'];
+  const inferred = inferUniformTypeFromSource(name, shader);
   const location = state ? getUniformLocation(state, name) : null;
+
+  name = inferred.name;
+  const length = (inferred.length === 'dynamic') ? value.length : inferred.length;
+  const type = inferred.type;
 
   if (type === 'unused') warn(`createUniformInferType`, `uniform ${name} is not being referenced.`);
   if (!UNIFORM_TYPES[type]) error('createUniformInferType', `Unsupported uniform type '${type}'`);
@@ -197,10 +212,10 @@ export const checkForMissingUniforms = (uniforms:Uniforms, src:string):void => {
     const line = lines[i].trim();
 
     if (line.startsWith('uniform')) {
-      const name = line.split(/\s+/)[2].replace(';', '');
+      const name = line.split(/\s+/)[2].replace(/(\[.+\])?;/, '');
 
       if (!uniforms[name]) {
-        error(`uniforms::checkForMissingUniforms: uniform ${name} is referenced, but was not supplied.`);
+        warn(`uniforms::checkForMissingUniforms: uniform ${name} is referenced, but was not supplied.`);
       }
     }
   }

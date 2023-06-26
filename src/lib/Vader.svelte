@@ -57,9 +57,21 @@
     });
 
     // If auto-render isn't on, updates to props should trigger a render
-    if (!auto) render();
+    if (!auto && running) render();
   }
 
+
+  // Intersection Observer
+
+  const onIntersection = (entry:IntersectionObserverEntry) => {
+    if (entry.isIntersecting) {
+      running = true;
+      render();
+    } else {
+      cancelAnimationFrame(rafref);
+      running = false;
+    }
+  }
 
 
   // Mouse Support
@@ -130,8 +142,15 @@
   onMount(() => {
     init();
 
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(onIntersection);
+    }, { threshold: 0 });
+
+    observer.observe(self);
+
     return () => {
       running = false;
+      observer.disconnect();
       cancelAnimationFrame(rafref);
     }
   });

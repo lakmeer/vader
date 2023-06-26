@@ -144,14 +144,19 @@ export const inferUniformTypeFromSource = (name:string, src:string):string => {
     }
   }
 
-  warn(`shaders::inferUniformTypeFromSource: uniform ${name} is not being referenced.`);
-  return "unknown";
+  return "unused";
 }
 
 export const hasShadertoyDirective = (src:string):boolean => {
-  if (src.split('\n')[0].indexOf(CUSTOM_DIRECTIVE_SHADERTOY) !== -1) {
-    console.info(`Vader::init - '${CUSTOM_DIRECTIVE_SHADERTOY}' forcing support mode`);
-    return true;
+  const lines = src.trim().split('\n');
+
+  for (let i in lines) {
+    const line = lines[i].trim();
+
+    if (line.indexOf(CUSTOM_DIRECTIVE_SHADERTOY) !== -1) {
+      console.info(`Vader::init - '${CUSTOM_DIRECTIVE_SHADERTOY}' forcing support mode`);
+      return true;
+    }
   }
 
   return false;

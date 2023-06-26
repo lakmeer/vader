@@ -140,6 +140,20 @@ export default {
         value: value?.toString() ?? ""
       } as Static;
     }
+  },
+
+  // Shim for uniforms which are being passed as props, but not declared by the shader
+  unused: {
+    commit: id,
+    update: id,
+    create: (state, location, value) => {
+      return {
+        type: 'unused',
+        location: null,
+        value: value
+      } as Uniform;
+    }
   }
+
 } as Record<Uniform['type'], UniformConfig>;
 

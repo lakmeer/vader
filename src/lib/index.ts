@@ -15,9 +15,7 @@ export { default } from './Vader.svelte';
 TODO
 ----
 
-- Intersection observer
 - iMouse.zw (click position)
-- Aspect ratio prop
 
 
 ShaderToy Uniforms to implement

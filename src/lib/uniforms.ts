@@ -82,6 +82,7 @@ export const createUniformInferType = (state:VaderState, name:string, value:Unif
   const type     = inferUniformTypeFromSource(name, shader) as Uniform['type'];
   const location = state ? getUniformLocation(state, name) : null;
 
+  if (type === 'unused') warn(`createUniformInferType`, `uniform ${name} is not being referenced.`);
   if (!UNIFORM_TYPES[type]) error('createUniformInferType', `Unsupported uniform type '${type}'`);
   return UNIFORM_TYPES[type].create(state, location, value);
 }

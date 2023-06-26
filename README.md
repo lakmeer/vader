@@ -66,12 +66,26 @@ with a (mostly) feature-compatible set of uniforms using ShaderToy's naming
 and type conventions. You should be able to run most Shadertoy source without
 modification in this mode.
 
-You can also put `// VADER_MODE(SHADERTOY)` in your fragment shader to force
+  ```glsl
+    <Vader mode="shadertoy" auto>
+      <script type="x-shader/fragment">
+        void mainImage (out vec4 fragColor, in vec2 fragCoord) {
+          vec2 uv = fragCoord/iResolution.xy;
+          vec3 col = 0.5 + 0.5*cos(iTime+uv.xyx+vec3(0,2,4));
+          fragColor = vec4(col,1.0); 
+        }
+      </script>
+    </Vader>
+  ```
+
+You can also put `// VADER_MODE(shadertoy)` in your fragment shader to force
 Vader to switch modes before it begins.
 
-**Limitations**
-- iChannels not available obviously.
+##### Limitations
+
+- iChannels not available
 - No plans to support any sound-based features
+
 
 ### Statics
 

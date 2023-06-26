@@ -15,6 +15,8 @@
   export let mode   = 'default' as VaderSupportMode;
   export let auto   = mode === 'shadertoy'; 
   export let aspect = 16/9;
+  export let scale  = 1;
+  export let pixelated = false;
 
 
   // State
@@ -92,7 +94,7 @@
 
   const render = () => {
     if (!vaderGl) return;
-    if (canvas)  Vader.updateDefaultUniforms(vaderGl, uniforms, canvas, mouse);
+    if (canvas)  Vader.updateDefaultUniforms(vaderGl, uniforms, canvas, scale, mouse);
     if (vaderGl) Vader.render(vaderGl, uniforms);
     if (auto && running) {
       cancelAnimationFrame(rafref); // There can only be one
@@ -157,8 +159,8 @@
 </script>
 
 
-<div class="Vader" style="--aspect: {aspect}" bind:this={self} bind:clientWidth bind:clientHeight on:mousemove={updateMouse} on:mousedown on:mouseup>
-  <canvas bind:this={canvas} width={clientWidth ?? 1600} height={clientHeight ?? 900}>
+<div class="Vader" style="--aspect: {aspect}; --ir: {pixelated ? 'pixelated' : 'auto'}" bind:this={self} bind:clientWidth bind:clientHeight on:mousemove={updateMouse} on:mousedown on:mouseup>
+  <canvas bind:this={canvas} width={(clientWidth ?? 1600)/scale} height={(clientHeight ?? 900)/scale}>
     <h1> Your browser does not support WebGL </h1>
   </canvas>
   <slot />
@@ -174,6 +176,7 @@
     display: block;
     width: 100%;
     max-width: 100%;
+    image-rendering: var(--ir);
   }
 </style>
 

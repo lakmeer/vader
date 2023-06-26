@@ -149,13 +149,13 @@ export const generateDefaultUniforms = (mode:VaderSupportMode):Uniforms => {
   return uniforms;
 }
 
-export const updateDefaultUniforms = (state:VaderState, uniforms:Uniforms, canvas:HTMLCanvasElement, mouse:VaderMouseState):void => {
+export const updateDefaultUniforms = (state:VaderState, uniforms:Uniforms, canvas:HTMLCanvasElement, scale:number, mouse:VaderMouseState):void => {
   if (!canvas) return;
   const now = performance.now() / 1000;
 
   switch (state.mode) {
     case 'shadertoy':
-      uniforms.iResolution.value = [canvas.clientWidth, canvas.clientHeight, 1];
+      uniforms.iResolution.value = [canvas.clientWidth/scale, canvas.clientHeight/scale, 1];
       uniforms.iFrame.value      = state.frame;
       uniforms.iTime.value       = now;
       uniforms.iTimeDelta.value  = now - (state.timeAtLastFrame ?? 0);
@@ -166,7 +166,7 @@ export const updateDefaultUniforms = (state:VaderState, uniforms:Uniforms, canva
       break;
 
     default:
-      uniforms.u_resolution.value = [canvas.clientWidth, canvas.clientHeight, 1];
+      uniforms.u_resolution.value = [canvas.clientWidth/scale, canvas.clientHeight/scale, 1];
       uniforms.u_time.value = now;
       if (uniforms.u_mouse) {
         uniforms.u_mouse.value = [mouse.x, mouse.y, mouse.down ? 1 : 0, 0];

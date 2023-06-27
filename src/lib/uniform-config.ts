@@ -7,7 +7,8 @@
 //
 
 import type { VaderState } from './core.ts';
-import type { Uniform } from './uniforms.ts';
+import type { Uniform, UnusedUniform, UniformTexture, Static } from './uniforms.ts';
+import type { Drawable } from './textures.ts';
 
 import { makeTexture, nearestPowerOfTwo } from './textures.js';
 import { id } from './misc.js';
@@ -29,11 +30,12 @@ type UniformCommitter = (state:VaderState, uniform:Uniform, tIx?:number) => void
 
 // Helper Functions
 
-const defaultCreate = (type:string):UniformCreater => (state, location, value) => {
+const defaultCreate = (type:string, length = 'single'):UniformCreater => (state, location, value) => {
   return {
     type,
     location,
     value,
+    length
   } as Uniform;
 }
 
@@ -101,7 +103,7 @@ export default {
 
   vec3v: {
     commit: flattenCommit('uniform3fv'),
-    create: defaultCreate('vec3v'),
+    create: defaultCreate('vec3v', 'dynamic'),
     update: defaultUpdate('vec3v'),
   },
 
@@ -109,10 +111,10 @@ export default {
     incTexIndex: true,
     commit: (state, uniform, textureIndex) => {
       uniform = uniform as UniformTexture;
-      state.gl.uniform1i(uniform.location, textureIndex);
+      state.gl.uniform1i(uniform.location, (textureIndex ?? 0));
       if (!uniform.image) return;
       if (!uniform.value) return;
-      state.gl.activeTexture(state.gl.TEXTURE0 + textureIndex);
+      state.gl.activeTexture(state.gl.TEXTURE0 + (textureIndex ?? 0));
       state.gl.bindTexture(state.gl.TEXTURE_2D, uniform.value);
     },
     update: (state, uniform, value) => {
@@ -130,7 +132,8 @@ export default {
         type: 'sampler2D',
         location,
         image: value as Drawable,
-        value: null
+        value: null,
+        length: 'single'
       } as UniformTexture;
     }
   },
@@ -141,14 +144,15 @@ export default {
       // By returning without updating, this uniform will still be recognised
       // as dirty next update cycle, by which time the state might be ready
       if (!state) return;
-      uniform.value = value.toString();
+      uniform.value = value?.toString() ?? "";
       state.needsRecompile = true;
     },
     create: (state, location, value) => {
       return {
         type: 'static',
         location: null,
-        value: value?.toString() ?? ""
+        value: value?.toString() ?? "",
+        length: 'single'
       } as Static;
     }
   },
@@ -161,8 +165,9 @@ export default {
       return {
         type: 'unused',
         location: null,
-        value: value
-      } as Uniform;
+        value: null,
+        length: 'single'
+      } as UnusedUniform;
     }
   }
 

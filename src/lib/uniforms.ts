@@ -39,6 +39,11 @@ export type Uniform3F = AbstractUniform & {
   value: [ number, number, number ]
 }
 
+export type Uniform3FV = AbstractUniform & {
+  type: 'vec3v';
+  value: Array<[ number, number, number ]>
+}
+
 export type Uniform4F = AbstractUniform & {
   type: 'vec4';
   value: [ number, number, number, number ]
@@ -55,6 +60,11 @@ export type Static = AbstractUniform & {
   value: string;
 }
 
+export type UnusedUniform = AbstractUniform & {
+  type: 'unused';
+  value: null;
+}
+
 
 // General uniform types
 
@@ -64,8 +74,10 @@ export type Uniform =
   | Uniform2F
   | Uniform3F
   | Uniform4F
+  | Uniform3FV
   | UniformTexture
-  | Static;
+  | Static
+  | UnusedUniform;
 
 export type Uniforms = {
   [key: string]: Uniform
@@ -74,12 +86,11 @@ export type Uniforms = {
 
 // Type Inference Result Object
 
-type UniformInferredType = {
+export type UniformInferredType = {
   name:   string;
-  type:   Uniform['type'],
+  type:   Uniform['type'];
   length: Uniform['length'],
 }
-
 
 
 //
@@ -94,8 +105,9 @@ export const createUniformInferType = (state:VaderState, name:string, value:Unif
   const location = state ? getUniformLocation(state, name) : null;
 
   name = inferred.name;
-  const length = (inferred.length === 'dynamic') ? value.length : inferred.length;
   const type = inferred.type;
+  //@ts-ignore
+  const length = (inferred.length === 'dynamic') ? value.length : inferred.length;
 
   if (type === 'unused') warn(`createUniformInferType`, `uniform ${name} is not being referenced.`);
   if (!UNIFORM_TYPES[type]) error('createUniformInferType', `Unsupported uniform type '${type}'`);
@@ -147,18 +159,18 @@ export const generateDefaultUniforms = (mode:VaderSupportMode):Uniforms => {
 
   switch (mode) {
     case 'shadertoy':
-      uniforms.iResolution = { type: 'vec3',  location: null, value: [0, 0, 1] };
-      uniforms.iFrame      = { type: 'int',   location: null, value: 0 };
-      uniforms.iFrameRate  = { type: 'float', location: null, value: 0 };
-      uniforms.iTime       = { type: 'float', location: null, value: now };
-      uniforms.iTimeDelta  = { type: 'float', location: null, value: 0 };
-      uniforms.iMouse      = { type: 'vec4',  location: null, value: [0, 0, 0, 0] };
+      uniforms.iResolution = { type: 'vec3',  length: 'single', location: null, value: [0, 0, 1] };
+      uniforms.iFrame      = { type: 'int',   length: 'single', location: null, value: 0 };
+      uniforms.iFrameRate  = { type: 'float', length: 'single', location: null, value: 0 };
+      uniforms.iTime       = { type: 'float', length: 'single', location: null, value: now };
+      uniforms.iTimeDelta  = { type: 'float', length: 'single', location: null, value: 0 };
+      uniforms.iMouse      = { type: 'vec4',  length: 'single', location: null, value: [0, 0, 0, 0] };
       break;
 
     default:
-      uniforms.u_resolution = { type: 'vec2',  location: null, value: [0, 0] };
-      uniforms.u_time       = { type: 'float', location: null, value: now };
-      uniforms.u_mouse      = { type: 'vec4',  location: null, value: [0, 0, 0, 0] };
+      uniforms.u_resolution = { type: 'vec2',  length: 'single', location: null, value: [0, 0] };
+      uniforms.u_time       = { type: 'float', length: 'single', location: null, value: now };
+      uniforms.u_mouse      = { type: 'vec4',  length: 'single', location: null, value: [0, 0, 0, 0] };
   }
 
   return uniforms;
@@ -197,7 +209,7 @@ export const updateDefaultUniforms = (state:VaderState, uniforms:Uniforms, canva
 // getUniformLocation
 // - Get the location of a uniform in the shader program by name
 
-export const getUniformLocation = (state:VaderState, name:string):WebGLUniformLocation => {
+export const getUniformLocation = (state:VaderState, name:string):WebGLUniformLocation|null => {
   return state.gl.getUniformLocation(state.program, name);
 }
 

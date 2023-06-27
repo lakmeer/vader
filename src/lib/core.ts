@@ -109,7 +109,7 @@ export const render = (state:VaderState, uniforms:Uniforms) => {
 
 // Proxy other modules
 
-export * from './shaders';
-export * from './uniforms';
-export * from './textures';
+export * from './shaders.js';
+export * from './uniforms.js';
+export * from './textures.js';
 

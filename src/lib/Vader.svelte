@@ -56,10 +56,6 @@
       if (uniforms[name].value !== value) {
         Vader.updateUniform(vaderGl, uniforms[name], value);
       }
-
-      if (uniforms[name].type === 'sampler2D') {
-        Vader.updateTexture(vaderGl, uniforms[name], value);
-      }
     });
 
     // If auto-render isn't on, updates to props should trigger a render
@@ -163,7 +159,15 @@
 </script>
 
 
-<div class="Vader" style="--aspect: {aspect}; --ir: {pixelated ? 'pixelated' : 'auto'}" bind:this={self} bind:clientWidth bind:clientHeight on:mousemove={updateMouse} on:mousedown on:mouseup>
+<div class="Vader"
+  role="presentation"
+  style="--aspect: {aspect}; --ir: {pixelated ? 'pixelated' : 'auto'}"
+  bind:this={self} 
+  bind:clientWidth
+  bind:clientHeight
+  on:mousemove={updateMouse}
+  on:mousedown
+  on:mouseup>
   <canvas bind:this={canvas} width={(clientWidth ?? 1600)/scale} height={(clientHeight ?? 900)/scale}>
     <h1> Your browser does not support WebGL </h1>
   </canvas>

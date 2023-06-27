@@ -64,8 +64,8 @@ uniform vec3  u_color;</pre>
 
   <div class="example" style="margin-top: 4rem;">
     <div class="input">
-      <label><code>u_max_iter:</code> {maxIter} </label>
-      <input bind:value={maxIter} type="range" min="2" max="20" step="1" />
+      <label for="a"><code>u_max_iter:</code> {maxIter} </label>
+      <input name="a" bind:value={maxIter} type="range" min="2" max="20" step="1" />
     </div>
 
     <Vader u_max_iter={maxIter}>
@@ -168,10 +168,6 @@ uniform vec3  u_color;</pre>
   .code pre {
     background: #1a1a1a;
     padding: 1rem;
-  }
-
-  .code div pre + pre {
-    margin-top: 1em;
   }
 
   .code span {

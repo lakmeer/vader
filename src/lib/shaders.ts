@@ -144,7 +144,7 @@ export const inferUniformTypeFromSource = (name:string, src:string):UniformInfer
       let isArray = rest.match(/\[(.+)\];$/);
       let length = (isArray ? parseInt(isArray[1]) : 'single') || 'dynamic';
       if (isArray) type = type + 'v';
-      return { name, type, length };
+      return { name, type, length } as UniformInferredType;
     }
 
     if (line.startsWith('#define') && line.includes(STATIC_REPLACEMENT) && line.includes(name)) {

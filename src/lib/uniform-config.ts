@@ -101,10 +101,22 @@ export default {
     update: defaultUpdate('int'),
   },
 
+  vec4v: {
+    commit: flattenCommit('uniform4fv'),
+    create: defaultCreate('vec4v', 'dynamic'),
+    update: defaultUpdate('vec4v'),
+  },
+
   vec3v: {
     commit: flattenCommit('uniform3fv'),
     create: defaultCreate('vec3v', 'dynamic'),
     update: defaultUpdate('vec3v'),
+  },
+
+  vec2v: {
+    commit: flattenCommit('uniform2fv'),
+    create: defaultCreate('vec2v', 'dynamic'),
+    update: defaultUpdate('vec2v'),
   },
 
   sampler2D: {

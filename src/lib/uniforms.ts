@@ -39,14 +39,24 @@ export type Uniform3F = AbstractUniform & {
   value: [ number, number, number ]
 }
 
+export type Uniform4F = AbstractUniform & {
+  type: 'vec4';
+  value: [ number, number, number, number ]
+}
+
+export type Uniform2FV = AbstractUniform & {
+  type: 'vec2v';
+  value: Array<[ number, number, number ]>
+}
+
 export type Uniform3FV = AbstractUniform & {
   type: 'vec3v';
   value: Array<[ number, number, number ]>
 }
 
-export type Uniform4F = AbstractUniform & {
-  type: 'vec4';
-  value: [ number, number, number, number ]
+export type Uniform4FV = AbstractUniform & {
+  type: 'vec4v';
+  value: Array<[ number, number, number ]>
 }
 
 export type UniformTexture = AbstractUniform & {
@@ -74,7 +84,9 @@ export type Uniform =
   | Uniform2F
   | Uniform3F
   | Uniform4F
+  | Uniform2FV
   | Uniform3FV
+  | Uniform4FV
   | UniformTexture
   | Static
   | UnusedUniform;
